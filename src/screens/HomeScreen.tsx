@@ -11,24 +11,29 @@ const HomeScreen = (props: any) => {
   const generateUniqueId = () => {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   };
-  const submitPressed = () => {
+  const submitPressed = async () => {
     if (title.length === 0 || content.length === 0) {
       return null;
     } else {
       const id = generateUniqueId();
       const formData = {id, title, content};
-      dispatch(addCreateFormDataAsync(formData))
-        .then(() => {
-          setTitle('');
-          setContent('');
-          setTimeout(() => {
-            props.navigation.navigate('Show');
-          }, 100);
-        })
-        .catch((error: any) => {
-          console.error('Failed to save form data:', error);
-        })
-        .finally(() => {});
+      try {
+        dispatch(addCreateFormDataAsync(formData))
+          .then(() => {
+            setTimeout(() => {
+              props.navigation.navigate('Show');
+            }, 10);
+          })
+          .catch((error: any) => {
+            console.error('Failed to save form data:', error);
+          })
+          .finally(() => {
+            setTitle('');
+            setContent('');
+          });
+      } catch (error) {
+        console.log('error', error);
+      }
     }
   };
 
@@ -40,12 +45,14 @@ const HomeScreen = (props: any) => {
           style={styled.input}
           value={title}
           onChangeText={text => setTitle(text)}
+          placeholder="Enter Title"
         />
         <Text style={styled.label}>Enter Content:</Text>
         <TextInput
           style={styled.input}
           value={content}
           onChangeText={text => setContent(text)}
+          placeholder="Enter Content"
         />
         <Button
           title="Save Blog Post"
